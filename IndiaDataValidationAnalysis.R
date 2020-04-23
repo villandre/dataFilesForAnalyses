@@ -89,8 +89,8 @@ indiaAnalysisValidation <- INLAMRA(
   fixedEffSDlist = list(start = fixedHyperValues$fixedEffSD),
    control = list(
      Mlon = 4,
-     Mlat = 4,
-     Mtime = 1,
+     Mlat = 5,
+     Mtime = 0,
      numValuesForIS = 100,
      numKnotsRes0 = 8,
      numIterOptim = 20,
