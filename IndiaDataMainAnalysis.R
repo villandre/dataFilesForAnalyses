@@ -7,7 +7,7 @@ library(MRAinla)
 library(RhpcBLASctl)
 
 blas_set_num_threads(1)
-omp_set_num_threads(8)
+omp_set_num_threads(1)
 
 setwd("/home/luc/INLAMRAfiles/INLAMRApaper1/realData")
 
