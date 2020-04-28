@@ -252,16 +252,16 @@ lapply(c("2012-05-27", "2012-05-28", "2012-05-29"), function(dateName) {
 
   rasterReprojected <- projectRaster(from = indiaTemperaturesLastWeek[[dateName]],
                                      to = indiaRasterReprojected)
-  ecol <- mapmisc::colourScale(values(rasterReprojected), col = "Spectral", breaks = 10, rev = TRUE, style = "equal", dec = 1, opacity = 0.5)
+  ecol <- mapmisc::colourScale(values(rasterReprojected), col = "Spectral", dec = 0, breaks = 10, rev = TRUE, style = "equal", opacity = 0.5)
   filename <- paste("outputFiles/temperatures", dateName, ".jpg", sep = "")
   jpeg(filename = filename, width = 1200, height = 1200)
   raster::plot(rasterReprojected, legend = FALSE, cex.axis = 2.5, col = ecol$col, breaks = ecol$breaks)
   plot(indiaPolygons, add = TRUE)
   # raster::plot(indiaTemperaturesLastWeek[[dateName]], legend.only = TRUE, legend.width = 4, axis.args = list(cex.axis = 3))
-  mapmisc::legendBreaks("bottomleft", ecol, title = "LST (Celsius)", bg = "white", cex = 2.5)
+  mapmisc::legendBreaks("bottomleft", ecol, title = NULL, bg = "white", cex = 2.5, bty = "n")
   plot(cityPoints, pch = 15, col = "red", cex = 5, add = TRUE)
   text(x = cityPoints@coords[ , 1], y = cityPoints@coords[ , 2], labels = replace(citiesNames, 1, "Mumbai"), offset = 2, cex = 4, pos = 4)
-  scaleBar(crs = crs(indiaPolygons), pos = "topleft", cex = 3, pt.cex = 2.2, title.cex = 3.5)
+  scaleBar(crs = crs(indiaPolygons), pos = "topleft", cex = 3, pt.cex = 2.2, title.cex = 3.5, seg.len = 3)
   dev.off()
   NULL
 })
@@ -306,14 +306,14 @@ values(may21rasterAddedMissing) <- replace(values(may21rasterAddedMissing), indi
 may21rasterAddedMissingReproj <- projectRaster(from = may21rasterAddedMissing, to = emptyRaster)
 may21rasterReproj <- projectRaster(from = may21raster, to = emptyRaster)
 
-ecolBasicValid <- mapmisc::colourScale(values(may21rasterReproj), col = "Spectral", breaks = 10, rev = TRUE, style = "equal", dec = 1, opacity = 0.5)
+ecolBasicValid <- mapmisc::colourScale(values(may21rasterReproj), col = "Spectral", dec = 0, breaks = 10, rev = TRUE, style = "equal", opacity = 0.5)
 jpeg("outputFiles/may21rasterOriginal.jpg", width = 1200, height = 1200)
 raster::plot(may21rasterReproj, legend = FALSE, cex.axis = 2.5, col = ecolBasicValid$col, breaks = ecolBasicValid$breaks)
 raster::plot(indiaPolygons, add = TRUE)
 raster::plot(cityPoints, pch = 15, col = "red", cex = 5, add = TRUE)
 text(x = cityPoints@coords[,1], y = cityPoints@coords[,2], labels = replace(citiesNames, 1, "Mumbai"), offset = 2, cex = 4, pos = 4)
-mapmisc::legendBreaks("bottomleft", ecolBasicValid, title = "LST (Celsius)", bg = "white", cex = 2)
-scaleBar(crs = crs(indiaPolygons), pos = "topleft", cex = 3, pt.cex = 2.2, title.cex = 3.5)
+mapmisc::legendBreaks("bottomleft", ecolBasicValid, title = NULL, bg = "white", cex = 2.5, bty = "n")
+scaleBar(crs = crs(indiaPolygons), pos = "topleft", cex = 3, pt.cex = 2.2, title.cex = 3.5, seg.len = 3)
 dev.off()
 
 jpeg("outputFiles/may21rasterAddedMissing.jpg", width = 1200, height = 1200)
@@ -321,8 +321,8 @@ raster::plot(may21rasterAddedMissingReproj, legend = FALSE, cex.axis = 2.5, col 
 raster::plot(indiaPolygons, add = TRUE)
 raster::plot(cityPoints, pch = 15, col = "red", cex = 5, add = TRUE)
 text(x = cityPoints@coords[,1], y = cityPoints@coords[,2], labels = replace(citiesNames, 1, "Mumbai"), offset = 2, cex = 4, pos = 4)
-mapmisc::legendBreaks("bottomleft", ecolBasicValid, title = "LST (Celsius)", bg = "white", cex = 2)
-scaleBar(crs = crs(indiaPolygons), pos = "topleft", cex = 3, pt.cex = 2.2, title.cex = 3.5)
+mapmisc::legendBreaks("bottomleft", ecolBasicValid, title = NULL, bg = "white", cex = 2.5, bty = "n")
+scaleBar(crs = crs(indiaPolygons), pos = "topleft", cex = 3, pt.cex = 2.2, title.cex = 3.5, seg.len = 3)
 dev.off()
 ######## END: Producing plot to represent validation test set ########
 
@@ -466,10 +466,10 @@ diffRasterSPDE <- raster::rasterize(x = spObjectReprojectedSPDE, y = emptyRaster
 citiesNames <- c("Mumbai", "Pune", "Nashik")
 cityPoints <- mapmisc::geocode(x = c("Mumbai City", "Pune", "Nashik"))
 
-ecolSPDE <- mapmisc::colourScale(values(diffRasterSPDE), col = "Spectral", breaks = 10, rev = TRUE, style = "equal", dec = 1, opacity = 0.5)
+ecolSPDE <- mapmisc::colourScale(values(diffRasterSPDE), col = "Spectral", dec = 0, breaks = 10, rev = TRUE, style = "equal", opacity = 0.5)
 ecolSPDE <- ecolSPDE[c("col", "breaks")]
 
-ecolINLAMRA <- mapmisc::colourScale(values(diffRaster), col = "Spectral", breaks = 10, rev = TRUE, style = "equal", dec = 1, opacity = 0.5)
+ecolINLAMRA <- mapmisc::colourScale(values(diffRaster), col = "Spectral", dec = 0, breaks = 10, rev = TRUE, style = "equal", opacity = 0.5)
 ecolINLAMRA <- ecolINLAMRA[c("col", "breaks")]
 
 newBoundaries <- range(c(ecolINLAMRA$breaks, ecolSPDE$breaks))
@@ -480,18 +480,18 @@ jpeg(file = "outputFiles/predErrorOnMay21withTimeCovarSPDE.jpg", width = 1200, h
   plot(indiaPolygons, add = TRUE)
   plot(cityPoints, pch = 15, col = "red", cex = 5, add = TRUE)
   text(x = cityPoints@coords[,1], y = cityPoints@coords[,2], labels = citiesNames, offset = 2, cex = 5, pos = 4)
-  mapmisc::legendBreaks("bottomleft", list(breaks = round(combinedBreaks, digits = 1), col = ecolINLAMRA$col), title = "Diff. (Celsius)", bg = "white", cex = 2)
-  mapmisc::scaleBar(crs = crs(indiaPolygons), pos = "topleft", cex = 3, pt.cex = 2.2, title.cex = 3.5)
+  mapmisc::legendBreaks("bottomleft", list(breaks = round(combinedBreaks, digits = 1), col = ecolINLAMRA$col), title = NULL, bg = "white", cex = 2.5, bty = "n")
+  mapmisc::scaleBar(crs = crs(indiaPolygons), pos = "topleft", cex = 3, pt.cex = 2.2, title.cex = 3.5, seg.len = 3)
 dev.off()
 
 jpeg(file = "outputFiles/predErrorOnMay21withTimeCovar.jpg", width = 1200, height = 1200)
 raster::plot(diffRaster, legend = FALSE, cex.axis = 2.5, col = ecolINLAMRA$col, breaks = combinedBreaks)
 plot(indiaPolygons, add = TRUE)
-mapmisc::legendBreaks("bottomleft", list(breaks = round(combinedBreaks, digits = 1), col = ecolINLAMRA$col), title = "Diff. (Celsius)", bg = "white", cex = 2)
+mapmisc::legendBreaks("bottomleft", list(breaks = round(combinedBreaks, digits = 1), col = ecolINLAMRA$col), title = NULL, bg = "white", cex = 2.5, bty = "n")
 # raster::plot(diffRaster, legend.only = TRUE, legend.width = 4, axis.args = list(cex.axis = 3))
 plot(cityPoints, pch = 15, col = "red", cex = 5, add = TRUE)
 text(x = cityPoints@coords[,1], y = cityPoints@coords[,2], labels = replace(citiesNames, 1, "Mumbai"), offset = 2, cex = 5, pos = 4)
-mapmisc::scaleBar(crs = crs(indiaPolygons), pos = "topleft", cex = 3, pt.cex = 2.2, title.cex = 3.5)
+mapmisc::scaleBar(crs = crs(indiaPolygons), pos = "topleft", cex = 3, pt.cex = 2.2, title.cex = 3.5, seg.len = 3)
 dev.off()
 
 ####### END: SPDE results analysis ############
@@ -510,12 +510,49 @@ predictionDataMain@data <- subset(predictionDataMain@data, select = -latitude)
 ######### Preparing parameter and hyperparameter moments table ########
 
 hyperMoments <- subset(indiaAnalysisMain$hyperMarginalMoments[c("space.rho", "time.rho", "scale"), ], select = -Skewness)
+## Delta method to restore the original scale
+hyperMoments$StdDev <- hyperMoments$StdDev * exp(hyperMoments$Mean)
+# mean(rho) = exp(mean(log rho) + 0.5 var(log rho))
+hyperMoments$Mean <- exp(hyperMoments$Mean + 0.5 * hyperMoments$StdDev^2)
+hyperMoments[ , "CredInt_2.5%"] <- exp(hyperMoments[ , "CredInt_2.5%"])
+hyperMoments[ , "CredInt_97.5%"] <- exp(hyperMoments[ , "CredInt_97.5%"])
 
 covariateMoments <- indiaAnalysisMain$FEmarginalMoments
 
-combinedMoments <- rbind(hyperMoments, covariateMoments)
+combinedMoments <- rbind(covariateMoments, hyperMoments)
 
-xtable::xtable(combinedMoments, caption = "Mean and standard deviation of hyperparameters and fixed effects posteriors", digits = c(0, 3, 3, 3, 3))
+landCoverNames <- c("Water", "Evergreen Needleleaf Forests", "Evergreen Broadleaf Forests", "Deciduous Needleleaf Forests", "Deciduous Broadleaf Forests", "Mixed Forests", "Closed Shrublands", "Open Shrublands", "Woody Savannas", "Savannas", "Grasslands", "Permanent Wetlands", "Croplands", "Urban and Built-up Lands", "Cropland/Natural Vegetation Mosaics", "Non-Vegetated Lands", "Unclassified")
+names(landCoverNames) <- paste("landCover", c(0:15, 255), sep = "")
+landCoverPositions <- grep(pattern = "landCover", x = rownames(combinedMoments))
+landCoverValues <- grep(pattern = "landCover", x = rownames(combinedMoments), value = TRUE)
+rownames(combinedMoments) <- replace(
+  rownames(combinedMoments),
+  landCoverPositions,
+  unname(landCoverNames[landCoverValues])
+)
+rownames(combinedMoments) <- replace(
+  rownames(combinedMoments),
+  match("elevation", rownames(combinedMoments)),
+  "Elevation"
+)
+rownames(combinedMoments) <- replace(
+  rownames(combinedMoments),
+  match("Aqua", rownames(combinedMoments)),
+  "Satellite: Aqua"
+)
+
+datesCovered <- paste("May", 26:31)
+names(datesCovered) <- paste("time", 2:7, sep = "")
+rownames(combinedMoments) <- replace(
+  rownames(combinedMoments),
+  grep(pattern = "time[0-9]$", x = rownames(combinedMoments)),
+  unname(datesCovered[grep(pattern = "time[0-9]$", x = rownames(combinedMoments), value = TRUE)])
+)
+
+reorderedCombined <- combinedMoments[c("Intercept", "Elevation", "Satellite: Aqua", intersect(rownames(combinedMoments), landCoverNames), intersect(rownames(combinedMoments), datesCovered), rownames(hyperMoments)), ]
+
+latexCode <- Hmisc::latex(Hmisc::format.df(reorderedCombined, dec = 3), rgroup = c("", "Land cover", "Time", "Hyperparameters"), n.rgroup = c(3, 14, 6, 3), file = "outputFiles/JASAtable1.tex")
+
 ######## END: Preparing parameter and hyperparameter moments table ########
 
 table((indiaAnalysisMain$predMoments$Mean - min(trainingDataMain@data[, "y"])) < -1)
@@ -549,25 +586,27 @@ plot(indiaAnalysisMain,
                 controlForScaleBar = list(
                   pos = "topleft",
                   cex = 2,
-                  pt.cex = 1.5
+                  pt.cex = 1.5,
+                  seg.len = 3
                 ),
                 controlForRasterLegend = list(
                   pos = "bottomleft",
-                  title = "LST (Celsius)",
+                  title = NULL,
                   bg = "white",
-                  cex = 2
+                  cex = 2.5
                 ),
                 controlForRasterColourScale = list(
                   col = "Spectral",
                   breaks = 10,
                   rev = TRUE,
                   style = "equal",
-                  dec = 1,
+                  dec = 0,
                   opacity = 0.5
                 ),
                 controlForRasterPlot = list(
                   cex.axis = 2,
-                  cex.main = 3
+                  cex.main = 3,
+                  main = NULL
                 ),
                 resolutionInMeters = 1000,
                 trim = 2,
@@ -586,25 +625,27 @@ plot(indiaAnalysisMain,
                 controlForScaleBar = list(
                   pos = "topleft",
                   cex = 2,
-                  pt.cex = 1.5
+                  pt.cex = 1.5,
+                  seg.len = 3
                 ),
                 controlForRasterLegend = list(
                   pos = "bottomleft",
-                  title = "LST (Celsius)",
+                  title = NULL,
                   bg = "white",
-                  cex = 2
+                  cex = 2.5
                 ),
                 controlForRasterColourScale = list(
                   col = "Spectral",
                   breaks = 10,
                   rev = TRUE,
                   style = "equal",
-                  dec = 1,
+                  dec = 0,
                   opacity = 0.5
                 ),
                 controlForRasterPlot = list(
                   cex.axis = 2,
-                  cex.main = 3
+                  cex.main = 3,
+                  main = NULL
                 ),
                 resolutionInMeters = 1000,
                 timesToPlot = unique(time(predictionDataMain))
@@ -622,25 +663,27 @@ plot(indiaAnalysisMain,
                 controlForScaleBar = list(
                   pos = "topleft",
                   cex = 2,
-                  pt.cex = 1.5
+                  pt.cex = 1.5,
+                  seg.len = 3
                 ),
                 controlForRasterLegend = list(
                   pos = "bottomleft",
-                  title = "LST (Celsius)",
+                  title = NULL,
                   bg = "white",
-                  cex = 2
+                  cex = 2.5
                 ),
                 controlForRasterColourScale = list(
                   col = "Spectral",
                   breaks = 10,
                   rev = TRUE,
                   style = "equal",
-                  dec = 1,
+                  dec = 0,
                   opacity = 0.5
                 ),
                 controlForRasterPlot = list(
                   cex.axis = 2,
-                  cex.main = 3
+                  cex.main = 3,
+                  main = NULL
                 ),
                 resolutionInMeters = 1000,
                 timesToPlot = unique(time(predictionDataMain))
