@@ -1,0 +1,30 @@
+## Data description
+
+This data dictionary describes the contents of the following data objects:
+
+* mainDataCompleteMap_May25_31_Larger.Rdata
+* testDataMay28_May25_31_Larger.Rdata
+* mainDataCompleteMap_May18_24.Rdata
+* testDataMay21_May18_24.Rdata
+
+The objects saved in the Rdata files are in the spacetime::STIDF format (an S4 format). The so-called "main" datasets (which are actually training datasets) differ from the test datasets only with respect to the inclusion of the "y" variable in the @data slot, which corresponds to the actual LST values.
+
+## Components
+
+@sp@coords: A data.frame with two columns called x and y, which gives the coordinates of each observation, expressed in the *sinusoidal* projection ("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +R=6371007.181 +units=m +no_defs") 
+
+@time: Time values for observations in the "xts"/"zoo" format (it is possible to get those values in POSIXct format by using the "time" function)
+
+@data: A data.frame object with columns:
+
+y: (Only included in the "main" (training) datasets) The LST readings derived from the MOD11A1 (https://lpdaac.usgs.gov/products/mod11a1v006/) and MYD11A1 (https://lpdaac.usgs.gov/products/myd11a1v006/) data
+
+landCover*: Dummy variables indicating the land cover value for each observation, obtained from the MCD12Q1 datasets (https://lpdaac.usgs.gov/products/mcd12q1v006/); the suffix indicates the land cover index, and is based on the UMD land cover classification system, cf. table 4 in https://lpdaac.usgs.gov/documents/101/MCD12_User_Guide_V6.pdf, the reference category is 0 (water)
+
+latitude: Measure of latitude, in the *sinusoidal projection*
+
+elevation: Elevation, in meters, with respect to sea level, obtained from the ASTER Digital Elevation Map (https://asterweb.jpl.nasa.gov/gdem.asp)
+
+time*: Dummy variables for time, with the reference category being time = 1; in the main analysis (mainDataCompleteMap_May25_31_Larger.Rdata and testDataMay28_May25_31_Larger.Rdata), the data were collected from May 25 (time = 1) to May 31, 2012 (time = 7). In the validation analysis (mainDataCompleteMap_May18_24.Rdata and testDataMay21_May18_24.Rdata), the data were collected between May 18 (time = 1) and May 24 (time = 7)
+
+Aqua: Binary variable, with a 1 indicating that an observation was collected by the Aqua satellite, and a 0, by the Terra satellite
