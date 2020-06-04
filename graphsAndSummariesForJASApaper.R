@@ -154,8 +154,8 @@ setwd("/home/luc/INLAMRAfiles/INLAMRApaper1/realData")
 
 # Input in variable rawDataFilesLocation the folder name where MODIS data files are found
 
-# rawDataFilesLocation <- "data/"
-rawDataFilesLocation <- "/store/luc/rawDataFiles"
+rawDataFilesLocation <- "data/"
+# rawDataFilesLocation <- "/store/luc/rawDataFiles"
 
 ######### Loading datasets necessary for analyses ########################
 
