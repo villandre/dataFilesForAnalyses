@@ -6,8 +6,12 @@ Prior to running the analyses, a working directory must be set up, and its name 
 
 The script files assume that **data files are in a subfolder called "data"**. This can of course be changed by modifying the folder name in the two calls to "load".  
 
-The INLAMRA function will save intermediate results (to allow for interruptions/restarts) in a subfolder called "outputFiles". This behaviour can be disabled by commenting out the lines starting with "fileToSaveOptOutput =" and "folderToSaveISpoints =".
+Installing the MRAinla R library is best done by running (in the R console)
 
-**The final output will also be saved in the "outputFiles" subfolder.**
+remotes::install_github(repo = "https://github.com/villandre/MRAinla")
 
-The script in graphsAndSummariesForJASApaper.R should produce all the graphs and the table in the paper.
+The calls to the INLAMRA function in IndiaDataMainAnalysis.R and IndiaDataValidationAnalysis.R will save intermediate results (to allow for interruptions/restarts) in a subfolder called "outputFiles". This behaviour can be disabled by commenting out the lines starting with "fileToSaveOptOutput =" and "folderToSaveISpoints =".
+
+**The final output will also be saved in the "outputFiles" subfolder**, so make sure that the subfolder exists or that the line has been edited to refer to an existing directory. 
+
+The script in graphsAndSummariesForJASApaper.R should produce all the graphs, tables, and summary statistics presented in the paper.
