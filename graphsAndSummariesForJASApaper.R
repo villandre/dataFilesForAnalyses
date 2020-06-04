@@ -119,7 +119,7 @@ funToCreateRaster <- function(temperatureSdsList, polygonBound) {
 
 produceLandCover <- function(landCoverFiles) {
   landCoverRasters <- lapply(landCoverFiles, function(filename) {
-    landCoverSds <- getSds(filename)
+    landCoverSds <- MODIS::getSds(filename)
     landCover <- raster(readGDAL(landCoverSds$SDS4gdal[2], as.is = TRUE)) # Based on land type classification 2: https://lpdaac.usgs.gov/products/mcd12q1v006/
     landCover
   })
@@ -209,7 +209,7 @@ splitTemperaturesBySatellite <- lapply(c(Terra = "MOD11A1.A2012", Aqua = "MYD11A
   temperatureFiles <- list.files(path = rawDataFilesLocation, pattern = searchString, full.names = TRUE)
   # temperatureFiles <- list.files(path = "data", pattern = searchString, full.names = TRUE)
   subFiles <- sapply(paste("A2012", dayOffset + dayRange, sep = ""), grep, x = temperatureFiles, value = TRUE)
-  temperatures <- lapply(subFiles, getSds)
+  temperatures <- lapply(subFiles, MODIS::getSds)
   splitTemperatures <- split(temperatures, f = factor(substr(subFiles, start = 0, stop = gregexpr(pattern = ".h2", text = subFiles[[1]])[[1]] - 1)))
   names(splitTemperatures) <- collectionDates
   splitTemperatures
@@ -418,7 +418,7 @@ stackTraining <- inla.stack(data = list(y = trainingDataValidation@data$y), A = 
    list(time5 = trainingDataValidation@data$time5),
    list(time6 = trainingDataValidation@data$time6),
    list(time7 = trainingDataValidation@data$time7)
-  ), tag="est")
+  ), tag = "est")
 
 stackTest <- inla.stack(
     data = list(y = NA),
