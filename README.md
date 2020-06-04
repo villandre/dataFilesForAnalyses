@@ -16,4 +16,4 @@ The calls to the INLAMRA function in IndiaDataMainAnalysis.R and IndiaDataValida
 
 The script in graphsAndSummariesForJASApaper.R should produce all the graphs, tables, and summary statistics presented in the paper.
 
-The code has been tested in Ubuntu Bionic (16.04). With suitable edits, it should work properly in other Linux distributions and macOS. Unfortunately, we have been unable to test it in Windows.
+The code has been tested in Ubuntu Bionic (18.04). With suitable edits, it should work properly in other Linux distributions and macOS. Unfortunately, we have been unable to test it in Windows.
