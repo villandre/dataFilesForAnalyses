@@ -8,18 +8,19 @@ library(spacetime)
 library(MRAinla)
 library(RhpcBLASctl)
 
+# This ensures that no unwanted parallelisation occurs.
+# 
 blas_set_num_threads(1)
 omp_set_num_threads(1)
 
  # Edit the following line for your system
- # Make sure to create an "outpufFiles" subfolder.
+ # Make sure to create an "outputFiles" subfolder.
  # Put the data files in a "data" subfolder.
 
 setwd("/home/luc/INLAMRAfiles/INLAMRApaper1/realData")
 
-## Importing data
+## Importing data (the data files should be in subfolder data/)
 
-# The data files should be in subfolder data/.
 validationTestDataName <- load("data/testDataMay21_May18_24.Rdata")
 validationTestData <- get(validationTestDataName)
 rm(ls = validationTestDataName)
@@ -28,27 +29,34 @@ validationTrainingDataName <- load("data/mainDataCompleteMap_May18_24.Rdata")
 validationTrainingData <- get(validationTrainingDataName)
 rm(ls = validationTrainingDataName)
 
+## Switching to the standard longitude/latitude projection
+
 validationTrainingData@sp <- spTransform(x = validationTrainingData@sp, CRSobj = CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
 validationTestData@sp <- spTransform(x = validationTestData@sp, CRSobj = CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
 
-## Not enough latitude variation to make it worth adjusting for it...
+## Not enough latitude variation to make it worth adjusting for it: we remove the covariate.
 
 validationTrainingData@data <- subset(validationTrainingData@data, select = -latitude)
 validationTestData@data <- subset(validationTestData@data, select = -latitude)
+
+## We center the elevation covariate.
 
 mainDataMeanElevation <- mean(validationTrainingData@data$elevation)
 validationTrainingData@data$elevation <- validationTrainingData@data$elevation - mainDataMeanElevation
 
 validationTestData@data$elevation <- validationTestData@data$elevation - mainDataMeanElevation
 
-fixedEffSD <- 10
-errorSD <- 0.5 # Based on https://landval.gsfc.nasa.gov/Results.php?TitleID=mod11_valsup10
+## We define starting values for hyperparameters (on the logarithmic scale).
 
-# Log-scale:
 hyperStart <- list(
   space = c(rho = 0),
   time = c(rho = 0),
   scale = 0)
+
+## The following hyperparameter values are fixed.
+
+fixedEffSD <- 10
+errorSD <- 0.5 # Based on https://landval.gsfc.nasa.gov/Results.php?TitleID=mod11_valsup10
 
 fixedHyperValues <- list(
   space = c(smoothness = log(1.5)),
@@ -56,6 +64,8 @@ fixedHyperValues <- list(
   errorSD = log(errorSD),
   fixedEffSD = log(fixedEffSD)
 )
+
+## These are the values for the mean and standard deviation parameters for the normal hyperpriors.
 
 logHyperpriorSD <- 2
 
@@ -70,7 +80,7 @@ hyperNormalList <- list(
   errorSD = c(mu = fixedHyperValues$errorSD , sigma = logHyperpriorSD),
   fixedEffSD = c(mu = fixedHyperValues$fixedEffSD, sigma = logHyperpriorSD))
 
-set.seed(10)
+## We now run the validation analysis.
 
 indiaAnalysisValidation <- INLAMRA(
   responseVec = validationTrainingData@data[ , "y"],
@@ -95,14 +105,14 @@ indiaAnalysisValidation <- INLAMRA(
      numKnotsRes0 = 8,
      numIterOptim = 20,
      numOpenMPthreads = 12L,
-     #fileToSaveOptOutput = "outputFiles/optimOutputValidation.Rdata", # Not essential, but convenient
-     #folderToSaveISpoints = "outputFiles/ISpointsValidation", # Not essential, but convenient
+     #fileToSaveOptOutput = "outputFiles/optimOutputValidation.Rdata", # Not essential, as the task is moderately short (could still be uncommented on slower systems where interrupting the code might be necessary)
+     #folderToSaveISpoints = "outputFiles/ISpointsValidation", # Not essential, as the task is moderately short (could still be uncommented on slower systems where interrupting the code might be necessary)
      tipKnotsThinningRate = 0.5,
      spaceJitterMax = 0, # Already jittered in spatial coordinates.
      timeJitterMaxInDecimalDays = 0 # No need to jitter time.
    )
 )
 
-# The working directory should have subfolder /outputFiles.
+## Results are saved in subdirectory outputFiles. Please ensure that it exists or change the file argument.
 
 save(indiaAnalysisValidation, file = "outputFiles/INLAMRA_validationAnalysis.Rdata", compress = TRUE)
