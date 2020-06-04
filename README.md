@@ -2,7 +2,7 @@
 Data and script files to perform analyses in studies submitted for publication. For now, the repository
 contains material for the 2020 paper introducing INLA-MRA.
 
-Prior to running the analyses, a working directory must be set up, and its name must be entered in the call to setwd in IndiaDataMainAnalysis.R and IndiaDataValidationAnalysis.R. The code should work straight away as long as all required libraries are installed and **subfolders "data" and "outputFiles" are created within the working directory.**
+Prior to running the analyses, a working directory must be set up, and its name must be entered in the calls to `setwd` in `IndiaDataMainAnalysis.R`, `IndiaDataValidationAnalysis.R`, `graphsAndSummariesForJASApaper.R` and `JASAcompleteAnalysisScript.R` (as well as the `prepareData*.R` files, should they be required). The code should work straight away as long as all required libraries are installed and **subfolders "data" and "outputFiles" are created within the working directory.**
 
 The script files assume that **data files are in a subfolder called "data"**. This can of course be changed by modifying the folder name in the two calls to "load".  
 
@@ -16,4 +16,4 @@ The calls to the INLAMRA function in IndiaDataMainAnalysis.R and IndiaDataValida
 
 The script in graphsAndSummariesForJASApaper.R should produce all the graphs, tables, and summary statistics presented in the paper.
 
-The code has been tested in Ubuntu Bionic (18.04). With suitable edits, it should work properly in other Linux distributions and macOS. Unfortunately, we have been unable to test it in Windows.
+The code has been tested in Ubuntu Bionic (18.04). It should work properly in other Linux distributions and macOS. Unfortunately, we have been unable to test it in Windows.
