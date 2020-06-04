@@ -15,3 +15,5 @@ The calls to the INLAMRA function in IndiaDataMainAnalysis.R and IndiaDataValida
 **The final output will also be saved in the "outputFiles" subfolder**, so make sure that the subfolder exists or that the line has been edited to refer to an existing directory. 
 
 The script in graphsAndSummariesForJASApaper.R should produce all the graphs, tables, and summary statistics presented in the paper.
+
+The code has been tested in Ubuntu Bionic (16.04). With suitable edits, it should work properly in other Linux distributions and macOS. Unfortunately, we have been unable to test it in Windows.
