@@ -1,3 +1,4 @@
+# We start by defining a few functions. The script starts afterwards: don't forget to change the working directory.
 ############ Function definitions ###############
 
 listSDStoImport <- function(searchString, rawDataFilesLocation, dayOffset, dayRange, collectionDates) {
@@ -23,16 +24,14 @@ uniformiseLandCover <- function(landCoverPointsList) {
   })
 }
 
-produceLandCover <- function(landCoverFiles, regionPolygon) { # Probably not absolutely necessary to subset land cover values, as the temperature values are already subsetted to be in India only.
+produceLandCover <- function(landCoverFiles, regionPolygon) { 
   landCoverRasters <- lapply(landCoverFiles, function(filename) {
     landCoverSds <- MODIS::getSds(filename)
     landCover <- raster::raster(readGDAL(landCoverSds$SDS4gdal[2], as.is = TRUE)) # Based on land type classification 2: https://lpdaac.usgs.gov/products/mcd12q1v006/
     landCover
   })
   landCover <- do.call(raster::merge, landCoverRasters)
-  # values(landCover) <- factor(values(landCover)) # Why this?
-  smallerRaster <- raster::crop(x = landCover, y = regionPolygon) # This will only keep points in the box defined by MaharashtraPolygonOtherCRS.
-  # The next few lines keep only land cover values within an arbitrarily-shaped box.
+  smallerRaster <- raster::crop(x = landCover, y = regionPolygon) 
   spObject <- raster::rasterToPoints(smallerRaster, spatial = TRUE)
   indiaValuesIndex <- sp::over(x = spObject, y = regionPolygon)
   pointsInIndia <- subset(spObject, subset = !is.na(indiaValuesIndex))
@@ -40,9 +39,6 @@ produceLandCover <- function(landCoverFiles, regionPolygon) { # Probably not abs
   output <- raster::rasterize(x = pointsInIndia, y = smallerRaster, field = "layer")
   output
 }
-
-# completeDateVector is for building the time design matrix when data in temperatures were not sampled across the entirety
-# of the period of interest, i.e. training data were sampled on days 1-7, but test data are only for day 4.
 
 prepareDataForMRAinla <- function(temperatures, elevations, landCover, satelliteNamesVec, collectionDatesPOSIX, completeDateVector = collectionDatesPOSIX) {
   if ("RasterLayer" %in% class(temperatures[[1]])) {
@@ -80,7 +76,7 @@ prepareDataForMRAinla <- function(temperatures, elevations, landCover, satellite
       unitVec
     }))
     colnames(landCoverMatrix) <- columnNames
-    sp::SpatialPointsDataFrame(coords = tempPoints@coords, data = as.data.frame(landCoverMatrix), proj4string = raster::crs(tempPoints)) # A line in data with only zeros corresponds to a missing value.
+    sp::SpatialPointsDataFrame(coords = tempPoints@coords, data = as.data.frame(landCoverMatrix), proj4string = raster::crs(tempPoints)) 
   })
   landCoverPoints <- uniformiseLandCover(landCoverPoints)
 
@@ -165,8 +161,6 @@ produceTestData <- function(indiaTemperatures, landCover, elevation, collectionD
   missingIndianValueIndices <- pointsInIndia@data$layer == -50
   missingPoints <- subset(pointsInIndia, subset = missingIndianValueIndices)
 
-  # We remove water tiles (although a few are included in mainDataCompleteMap)
-
   landCoverInMissingZones <- raster::extract(x = landCover, y = missingPoints)
   missingPointsNoWaterNoNA <- missingPoints[which(!is.na(landCoverInMissingZones) & !(landCoverInMissingZones == 0)), ]
 
@@ -206,11 +200,9 @@ setwd("/home/luc/INLAMRAfiles/INLAMRApaper1/realData")
 ######## Importing data from MODIS #########################
 
 # This is the folder where the data files downloaded from EarthData are.
-# We suggest storing the files in the "data" subfolder. Uncomment the next
-# comment if you put them in that folder, else input the full path.
+# We suggest storing the files in the "data" subfolder.
 
-rawDataFilesLocation <- "/store/luc/rawDataFiles"
-# rawDataFilesLocation <- "data/"
+rawDataFilesLocation <- "data/"
 
 # MODIS naming convention: nnnnnnn.Ayyyyddd.h00v00.vvv.yyyydddhhmmss.
 # nnnnnnn: Product name
@@ -258,7 +250,7 @@ elevation <- lapply(elevationFiles, raster)
 ######## Creating datasets for main analysis ####################
 mainDataCompleteMap <- prepareDataForMRAinla(landCover = landCover, elevations = elevation, temperatures = indiaTemperatures, collectionDatesPOSIX = collectionDatesPOSIX, satelliteNamesVec = satellitePerDay)
 
-# The test data in the main analysis consists of all missing temperatures on the 28th (excluding oceanic tiles). The goal is to complete the map.
+# The test data in the main analysis consists of all missing LSTs on May 28th (excluding oceanic tiles). The goal is to complete the map.
 
 testDataMay28 <- produceTestData(indiaTemperatures = indiaTemperatures, boundaryPolygon = MaharashtraPolygonOtherCRS, dayIndex = length(indiaTemperatures) - 3, satelliteNamesVec = satellitePerDay[[4]], landCover = landCover, elevation = elevation, collectionDatesPOSIX = collectionDatesPOSIX)
 
@@ -268,10 +260,10 @@ mainDataCompleteMap@data <- subset(mainDataCompleteMap@data, select = -landCover
 if ("landCover0" %in% colnames(testDataMay28@data)) {
   testDataMay28@data <- subset(testDataMay28@data, select = -landCover0)
 }
-# The response variable "y" in testDataMay28 only takes placeholder value "-50".
+
 testDataMay28@data <- subset(testDataMay28@data, select = -y)
 
-# We need to jitter the training data...
+# We very lightly jitter the training data...
 
 set.seed(10)
 mainDataCompleteMap@sp@coords <- geoR::jitter2d(mainDataCompleteMap@sp@coords, max = 0.00001)

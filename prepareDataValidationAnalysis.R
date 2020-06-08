@@ -1,3 +1,4 @@
+# We start by defining a few functions. Data preparation starts in the next section. Don't forget to change the working directory.
 ########## Function definitions ###############
 
 listSDStoImport <- function(searchString, rawDataFilesLocation, dayOffset, dayRange, collectionDates) {
@@ -23,16 +24,14 @@ uniformiseLandCover <- function(landCoverPointsList) {
   })
 }
 
-produceLandCover <- function(landCoverFiles, regionPolygon) { # Probably not absolutely necessary to subset land cover values, as the temperature values are already subsetted to be in India only.
+produceLandCover <- function(landCoverFiles, regionPolygon) { 
   landCoverRasters <- lapply(landCoverFiles, function(filename) {
     landCoverSds <- MODIS::getSds(filename)
     landCover <- raster::raster(readGDAL(landCoverSds$SDS4gdal[2], as.is = TRUE)) # Based on land type classification 2: https://lpdaac.usgs.gov/products/mcd12q1v006/
     landCover
   })
   landCover <- do.call(raster::merge, landCoverRasters)
-  # values(landCover) <- factor(values(landCover)) # Why this?
-  smallerRaster <- raster::crop(x = landCover, y = regionPolygon) # This will only keep points in the box defined by MaharashtraPolygonOtherCRS.
-  # The next few lines keep only land cover values within an arbitrarily-shaped box.
+  smallerRaster <- raster::crop(x = landCover, y = regionPolygon) 
   spObject <- raster::rasterToPoints(smallerRaster, spatial = TRUE)
   indiaValuesIndex <- sp::over(x = spObject, y = regionPolygon)
   pointsInIndia <- subset(spObject, subset = !is.na(indiaValuesIndex))
@@ -61,7 +60,7 @@ prepareDataForMRAinla <- function(temperatures, elevations, landCover, satellite
 
   timeModelMatrix <- t(sapply(timeLevels, function(x) {
     unitVector <- rep(0, numTimePoints - 1)
-    unitVector[x] <- 1 # When x takes value 0, the vector remains all 0s, which is what we want.
+    unitVector[x] <- 1 
     unitVector
   }))
   colnames(timeModelMatrix) <- paste("time", 2:numTimePoints, sep = "")
@@ -77,7 +76,7 @@ prepareDataForMRAinla <- function(temperatures, elevations, landCover, satellite
       unitVec
     }))
     colnames(landCoverMatrix) <- columnNames
-    sp::SpatialPointsDataFrame(coords = tempPoints@coords, data = as.data.frame(landCoverMatrix), proj4string = raster::crs(tempPoints)) # A line in data with only zeros corresponds to a missing value.
+    sp::SpatialPointsDataFrame(coords = tempPoints@coords, data = as.data.frame(landCoverMatrix), proj4string = raster::crs(tempPoints)) 
   }
 
   landCoverPoints <- lapply(temperaturePoints, FUN = funToGetLandCoverPoints)
@@ -182,11 +181,9 @@ setwd("/home/luc/INLAMRAfiles/INLAMRApaper1/realData")
 ######## Importing data from MODIS #########################
 
 # This is the folder where the data files downloaded from EarthData are.
-# We suggest storing the files in the "data" subfolder. Uncomment the next
-# comment if you put them in that folder, else input the full path.
+# We suggest storing the files in the "data" subfolder.
 
-rawDataFilesLocation <- "/store/luc/rawDataFiles"
-# rawDataFilesLocation <- "data/"
+rawDataFilesLocation <- "data/"
 
 ######## Importing MODIS data ####################################
 
@@ -203,15 +200,8 @@ collectionDatesPOSIX <- as.POSIXct(paste("2012-05-", dayRange, sep = ""))
 
 splitTemperaturesBySatellite <- lapply(c(Terra = "MOD11A1.A2012", Aqua = "MYD11A1.A2012"), FUN = listSDStoImport, rawDataFilesLocation = rawDataFilesLocation, dayOffset = dayOffset, dayRange = dayRange, collectionDates = collectionDates)
 
-# data(wrld_simpl)
-# indiaPolygons <- SpatialPolygons(list(wrld_simpl@polygons[[83]]))
-# crs(indiaPolygons) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
-# indiaPolygonsOtherCRS <- spTransform(indiaPolygons, CRSobj = CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +R=6371007.181 +units=m +no_defs"))
-
-# Mumbai polygon:
 
 westMaharashtraPolygonEdges <- rbind(c(19.55, 72.76), c(19.55, 74), c(18.35, 74), c(18.35, 72.76), c(19.55, 72.76))
-# westMaharashtraPolygonEdges <- rbind(c(20.2, 72.76), c(20.2, 75.5), c(17.8, 75.5), c(17.8, 72.76), c(20.2, 72.76))
 westMaharashtraPolygonEdges <- westMaharashtraPolygonEdges[ , 2:1]
 westMaharashtraPolygon <- SpatialPolygons(Srl = list(Polygons(list(Polygon(coords = westMaharashtraPolygonEdges)), ID = "Mumbai")))
 crs(westMaharashtraPolygon) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
