@@ -399,7 +399,7 @@ Atest <- inla.spde.make.A(mesh2, loc = testDataValidation@sp@coords, group = tim
 stackTraining <- inla.stack(data = list(y = trainingDataValidation@data$y), A = list(Atraining, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 , 1, 1, 1, 1),
  effects = list(
   c(STindex, list(intercept = 1)),
-   list(landCover3 = trainingDataValidation@data$landCover2),
+   list(landCover3 = trainingDataValidation@data$landCover3),
    list(landCover4 = trainingDataValidation@data$landCover4),
    list(landCover5 = trainingDataValidation@data$landCover5),
    list(landCover8 = trainingDataValidation@data$landCover8),
@@ -425,7 +425,7 @@ stackTest <- inla.stack(
     A = list(Atest, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 , 1, 1, 1, 1),
     effects = list(
      c(STindex, list(intercept = 1)),
-      list(landCover3 = testDataValidation@data$landCover2),
+      list(landCover3 = testDataValidation@data$landCover3),
       list(landCover4 = testDataValidation@data$landCover4),
       list(landCover5 = testDataValidation@data$landCover5),
       list(landCover8 = testDataValidation@data$landCover8),
